@@ -71,6 +71,9 @@ def get_fm(path: PATH, mode: MODE = 'df', *, cache_dir: Optional[PATH] = None) -
     if cache_dir is None:
         cache_dir = 'monitoring_cache'
     cache_dir = CPath(path_type=Path.is_dir).validate(cache_dir)
+    if check_parent_and_child(path, cache_dir):
+        msg = f'キャッシュフォルダを{path}下に置くことはできません。'
+        raise ValueError(msg)
     if m == 'd':
         return FolderMonitoringDir(path, cache_dir)
     elif m == 'f':
