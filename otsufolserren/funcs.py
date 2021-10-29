@@ -1,41 +1,33 @@
 from pathlib import Path
 from typing import Optional
 
-from .cfg import MODE, PATH, PATH_FILTER, TypeFM
+from otsuvalidator import CPath
+
+from .cfg import MODE, PATH, TypeFM
 from .monitoring.classes import (FolderMonitoring, FolderMonitoringDir, FolderMonitoringFile)
 
 
-def check_path(path: PATH, path_type: Optional[PATH_FILTER] = None, exist_only: bool = False) -> Path:
-    """パスが指定した形式に従っているかを判定し、従っている場合にはそのパスのPathオブジェクトを返します。
+def check_parent_and_child(dir_: Path, path: Path) -> bool:
+    """dir_がpathの先祖パスであるかを調べます。
 
     Args:
-        path (PATH): 判定したいパスです。
-        path_type (Optional[PATH_FILTER], optional): 判定用の関数です。Path.is_dirなどが使えます。
-        exist_only (bool, optional): 判定結果にかかわらず、存在しなければ例外を発生させます。
+        dir_ (Path): 先祖パスと思わしきパスです。
+        path (Path): dir_下に存在すると思わしきパスです。
 
     Raises:
-        FileExistsError: パスが指定形式に従っていない場合に投げられます。
-        FileNotFoundError: パスが存在していない場合に投げられます。
+        ValueError: dir_がフォルダではない場合に投げられます。
 
     Returns:
-        Path: パスのPathオブジェクトです。
+        bool: フォルダdir_の中身を調べたとき、pathが存在するかどうかです。
     """
-    if isinstance(path, Path):
-        p = path
-    else:
-        p = Path(path)
-    p = p.resolve()
-    if p.exists():
-        if path_type is None:
-            return p
-        elif path_type(p):
-            return p
-        msg = f'{p}は指定した形式のパスではありません。'
-        raise FileExistsError(msg)
-    if exist_only:
-        msg = f'{p}は存在しないパスです。'
-        raise FileNotFoundError(msg)
-    return p
+    if not dir_.is_dir():
+        msg = f'{dir_}はフォルダではありません。'
+        raise ValueError(msg)
+    dir_ = dir_.resolve()
+    path = path.resolve()
+    if dir_ == path:
+        return True
+    return dir_ in path.parents
 
 
 def get_digit(num: int) -> int:
@@ -75,10 +67,10 @@ def get_fm(path: PATH, mode: MODE = 'df', *, cache_dir: Optional[PATH] = None) -
         TypeFM: MonitoringFolderとして扱えるいずれかのクラスのインスタンスです。
     """
     m = mode.lower()
-    path = check_path(path, Path.is_dir, True)
+    path = CPath(exist_only=True, path_type=Path.is_dir).validate(path)
     if cache_dir is None:
         cache_dir = 'monitoring_cache'
-    cache_dir = check_path(cache_dir, Path.is_dir)
+    cache_dir = CPath(path_type=Path.is_dir).validate(cache_dir)
     if m == 'd':
         return FolderMonitoringDir(path, cache_dir)
     elif m == 'f':

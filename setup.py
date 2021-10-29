@@ -1,17 +1,17 @@
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open('LICENSE', 'r', encoding='utf-8') as f:
     lcs = f.read()
 info = sys.version_info
 setup(
     name='otsufolserren',
-    version='1.0.0',
+    version='1.0.1',
     description='[Windows Only!]フォルダ内のパスに対して連番リネームを行うライブラリです。',
     author='Otsuhachi',
     author_email='agequodagis.tufuiegoeris@gmail.com',
-    packages=['otsufolserren'],
+    packages=find_packages(),
     include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',

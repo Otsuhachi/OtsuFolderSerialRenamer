@@ -6,6 +6,7 @@ from otsutil import ObjectSaver, setup_path
 from otsuvalidator import CPath
 
 from ..cfg import PATH_FILTER, TypeFM
+from ..funcs import check_parent_and_child
 
 
 class FM(ABC):
@@ -31,6 +32,9 @@ class FM(ABC):
         self.path = path
         self.change = False
         self.cache_file = cache_dir / f'{self.path.name}.cache'
+        if check_parent_and_child(self.path, self.cache_file):
+            msg = f'キャッシュファイルを監視対象のフォルダ下に置くことはできません。'
+            raise ValueError(msg)
         self.diff: list[str] = []
         setup_path(self.cache_file)
         self.update_cache()

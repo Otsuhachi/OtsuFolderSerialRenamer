@@ -25,10 +25,10 @@
         },
         "otsuvalidator": {
             "hashes": [
-                "sha256:a52533e6f6888136be54fc4dec5c585929c2530619dd323a2dbdd40c7084fcb3"
+                "sha256:7464148b050c2db4db6609705e98aeba256126f6c533a1a355c5793f93b68904"
             ],
             "index": "pypi",
-            "version": "==1.2.0"
+            "version": "==1.2.1"
         }
     },
     "develop": {
