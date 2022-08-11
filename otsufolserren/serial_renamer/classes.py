@@ -8,6 +8,7 @@ from ..funcs import get_digit
 class FolderSerialRenamer:
     """フォルダ内のパスを連番リネームするクラスです。
     """
+
     def __enter__(self) -> 'FolderSerialRenamer':
         return self
 
@@ -53,9 +54,9 @@ class FolderSerialRenamer:
         Returns:
             RENAME_PREVIEW: {<元のパス>: <リネーム後のパス>, ...}です。
         """
-        mf = self.fm
+        fm = self.fm
         order = self.order
-        paths = mf.paths
+        paths = fm.paths
         dirs = sorted(filter(Path.is_dir, paths), key=order)
         files = sorted(filter(Path.is_file, paths), key=order)
         digit_dir = get_digit(len(dirs))
@@ -100,30 +101,25 @@ class FolderSerialRenamer:
             only_when_change (bool, optional): フォルダに変更を発見したときのみリネームを実行します。
             preview (Optional[RENAME_PREVIEW], optional): リネームのプレビューです。基本的にself.get_preview()で取得した値以外を渡さないでください。
         """
-        mf = self.fm
-        if only_when_change and not mf:
+        tmp_suffix = '.tmp'
+        laters: list[Path] = []
+        fm = self.fm
+        if only_when_change and not fm:
             return
         if preview is None:
             preview = self.get_preview()
-        laters: RENAME_PREVIEW = {}
         for k, v in preview.items():
             if k == v:
                 continue
-            if v in preview:
-                name = k.stem
-                suffix = k.suffix
-                np = (k.parent / f'{name}(1){suffix}').resolve()
-                cur = 1
-                paths = mf.paths
-                while np in paths:
-                    cur += 1
-                    np = (k.parent / f'{name}({cur}){suffix}').resolve()
-                k.rename(np)
-                laters[np] = v
-            else:
-                k.rename(v)
-        for k, v in laters.items():
-            k.rename(v)
+            np = v
+            if np.exists():
+                name = np.name + f'{tmp_suffix}'
+                np = np.parent / name
+                laters.append(np)
+            k.rename(np)
+        for p in filter(lambda x: x.suffix == tmp_suffix, laters):
+            np = p.parent / p.stem
+            p.rename(np)
         self.update()
 
     def update(self) -> None:

@@ -7,7 +7,7 @@ with open('LICENSE', 'r', encoding='utf-8') as f:
 info = sys.version_info
 setup(
     name='otsufolserren',
-    version='1.0.2',
+    version='2022.8.12',
     description='[Windows Only!]フォルダ内のパスに対して連番リネームを行うライブラリです。',
     author='Otsuhachi',
     author_email='agequodagis.tufuiegoeris@gmail.com',
