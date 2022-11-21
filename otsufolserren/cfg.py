@@ -17,6 +17,7 @@ RENAME_PREVIEW = dict[Path, Path]
 class UseableSortKey(Protocol):
     """ソートのキーとして使用可能であることを示すプロトコルです。
     """
+
     def __lt__(self, __other: Any) -> bool:
         ...
 
@@ -24,6 +25,7 @@ class UseableSortKey(Protocol):
 class TypeFM(Protocol):
     """フォルダ内のパスの変更を監視するFolderMonitoringであることを示すプロトコルです。
     """
+
     def __enter__(self) -> 'TypeFM':
         ...
 

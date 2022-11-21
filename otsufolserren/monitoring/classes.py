@@ -101,6 +101,7 @@ class FM(ABC):
 class FolderMonitoringFile(FM):
     """フォルダ内のファイルの変更を監視するFolderMonitoringクラスです。
     """
+
     @property
     def paths(self) -> set[Path]:
         return {x for x in self.iterdir(Path.is_file)}
@@ -109,6 +110,7 @@ class FolderMonitoringFile(FM):
 class FolderMonitoringDir(FM):
     """フォルダ内のフォルダの変更を監視するFolderMonitoringクラスです。
     """
+
     @property
     def paths(self) -> set[Path]:
         return {x for x in self.iterdir(Path.is_dir)}
@@ -117,6 +119,7 @@ class FolderMonitoringDir(FM):
 class FolderMonitoring(FM):
     """フォルダ内のパスの変更を監視するFolderMonitoringクラスです。
     """
+
     @property
     def paths(self) -> set[Path]:
         return {x for x in self.iterdir()}
